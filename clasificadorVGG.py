@@ -6,8 +6,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing import image
 from keras.models import Model
 from keras.applications import imagenet_utils
-from keras.layers import Dense,GlobalAveragePooling2D
-from keras.applications import MobileNetV2
+from keras.applications.vgg16 import VGG16
 from keras.layers import Flatten
 from keras.applications.mobilenet import preprocess_input
 import numpy as np
@@ -35,16 +34,16 @@ def summarize_diagnostics(history):
     pyplot.savefig(filename + '_plot.png')
     pyplot.close()
 
-base_model=MobileNetV2(weights='imagenet',include_top=False,input_shape=(224, 224, 3)) 
+base_model=VGG16(weights='imagenet',include_top=False,input_shape=(224, 224, 3)) 
 #Transfer Learning
 for layer in base_model.layers:
     layer.trainable=False
 
 x=base_model.output
 x = Flatten()(base_model.layers[-1].output)
-x=Dense(1024,activation='relu')(x) #we add dense layers so that the model can learn more complex functions and classify for better results.
-x=Dense(1024,activation='relu')(x) #dense layer 2
-x=Dense(512,activation='relu')(x) #dense layer 3
+x=Dense(128,activation='relu')(x) #we add dense layers so that the model can learn more complex functions and classify for better results.
+x=Dense(128,activation='relu')(x) #dense layer 2
+x=Dense(64,activation='relu')(x) #dense layer 2
 preds=Dense(4,activation='softmax')(x) #final layer with softmax activation
 model=Model(inputs=base_model.input,outputs=preds)
 model.summary()
@@ -73,7 +72,7 @@ validation_generator=dategenerator.flow_from_directory('./datasetreal/validation
 model.compile(loss='categorical_crossentropy',metrics=['accuracy'])
 
 
-checkpointer = ModelCheckpoint(filepath='best.hdf5', verbose=1, save_best_only=True)
+checkpointer = ModelCheckpoint(filepath='bestVGG.hdf5', verbose=1, save_best_only=True)
 history = model.fit_generator(train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=len(validation_generator), epochs=50, verbose=1)
 model.summary()
 
