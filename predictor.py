@@ -12,10 +12,14 @@ tipos=["Class A/", "Class B/", "Class C/", "Class D/"]
 modeloMB='./modelo/modeloMB.h5'
 pesosMB='./modelo/pesosMB.h5'
 
+modeloVGG='./modelo/modeloVGG.h5'
+pesosVGG='./modelo/pesosVGG.h5'
+
 modelMB=load_model(modeloMB)
 modelMB.load_weights(pesosMB)
 
-
+modelVGG=load_model(modeloVGG)
+modelVGG.load_weights(pesosVGG)
 
 def analizar(imagen):
     x=load_img(imagen,target_size=(224,224))
@@ -23,6 +27,20 @@ def analizar(imagen):
     x=np.expand_dims(x,axis=0)
     x=x/255
     arreglo=modelMB.predict(x)
+    resultado=arreglo[0]
+    maximo= np.amax(resultado)
+    if maximo < 0.1:
+        return "None"
+    respuesta=np.argmax(resultado)
+    return tipos[respuesta]
+
+
+def analizarVGG(imagen):
+    x=load_img(imagen,target_size=(224,224))
+    x=img_to_array(x)
+    x=np.expand_dims(x,axis=0)
+    x=x/255
+    arreglo=modelVGG.predict(x)
     resultado=arreglo[0]
     maximo= np.amax(resultado)
     if maximo < 0.1:
@@ -38,11 +56,11 @@ def test():
         for entry in os.listdir(path):
             file_path=os.path.join(path, entry)
             if os.path.isfile(file_path):
-                result = analizar(file_path)
+                result = analizarVGG(file_path)
                 if result==tipos[tipos.index(i)]:
                     aciertos=aciertos+1
                 total=total+1
         print("clase: %s aciertos: %d totales: %d "%(i,aciertos, total))
 
 
-#test()
+test()

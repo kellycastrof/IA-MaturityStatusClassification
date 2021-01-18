@@ -1,6 +1,6 @@
 from tkinter import Tk, Frame, Label, PhotoImage, Button, BOTH, X, Y, LEFT, LabelFrame
 from tkinter.filedialog import askopenfilename
-from predictor import analizar
+from predictor import analizar, analizarVGG
 
 status={"Class A/":"Banano Verde", 
         "Class B/":"Banano verde-amarillento", 
@@ -18,14 +18,17 @@ def get_root(height, width):
     return root
 
 
-def analize(name, result):
+def analize(name, result, VGG):
     image_formats= [("png files", "*.png"),("jpg files", "*.jpg")]
     img_file = askopenfilename(filetypes=image_formats)
     f=img_file.split('/')
     name.config(text=f[-1])
     clase = analizar(img_file)
+    class2 = analizarVGG(img_file)
     textoMB="MobileNet: "+ status[clase]
+    textoVGG="VGG: "+ status[class2]
     result.config(text= textoMB)
+    VGG.config(text=textoVGG)
 
 
 def get_body(root):
@@ -46,10 +49,11 @@ def get_body(root):
 
     result_frame = LabelFrame(root, text="Resultado", width=100, height=80)
     result_label = Label(result_frame, text=' ')   
+    result_labelVGG = Label(result_frame, text=' ')  
 
     image_name = Label(image_frame, text=" ", width=40)
 
-    button = Button(image_frame, text="Seleccionar imagen", command=lambda: analize(image_name, result_label))
+    button = Button(image_frame, text="Seleccionar imagen", command=lambda: analize(image_name, result_label, result_labelVGG))
     button.pack(side=LEFT)
     button.config(foreground='white', bg='gray', relief="raised", borderwidth=0)
 
@@ -60,6 +64,8 @@ def get_body(root):
 
     result_label.pack(padx=20, pady=20)
     result_label.config(bg='white')
+    result_labelVGG.pack(padx=20, pady=20)
+    result_labelVGG.config(bg='white')
 
 
 root=get_root(600,500)
