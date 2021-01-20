@@ -1,7 +1,7 @@
 numpy
 matplotlib
-tkinter
 keras
 tensorflow
+os-sys
+tkintertable
 pathlib
-os
