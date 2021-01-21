@@ -13,7 +13,7 @@ import numpy as np
 from keras.optimizers import SGD
 from matplotlib import pyplot
 from keras.callbacks import ModelCheckpoint
-
+import pandas as pd
 
 import sys
 
@@ -58,7 +58,7 @@ model=Model(inputs=base_model.input,outputs=preds)
 model.summary()
 
 
-model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='Adadelta', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
 dategenerator=ImageDataGenerator(preprocessing_function=preprocess_input) 
@@ -95,6 +95,10 @@ model.summary()
 _, acc = model.evaluate_generator(test_generator, steps=len(test_generator), verbose=0)
 print('> %.3f' % (acc * 100.0))
 
+hist_df = pd.DataFrame(history.history)
+hist_csv_file = './graficas/historyVGG.csv'
+with open(hist_csv_file, mode='w') as f:
+    hist_df.to_csv(f)
 
 summarize_diagnostics(history)
 
